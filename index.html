@@ -5,28 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>设备资产信息管理</title>
     <style>
-        /* ========== 全局配置变量（所有可调节项集中管理，直接修改即可）========== */
+        /* ========== 全局配置变量（修改这里即可调整：LOGO/标题字体/样式/背景图）========== */
         :root {
-            /* 标题区核心配置：固定宽高，全端不变 */
-            --title-area-width: 1200px;    /* 标题区固定宽度 */
-            --title-area-height: 220px;    /* 标题区固定高度 */
+            /* LOGO PC端配置（与标题完全独立） */
+            --logo-pc-width: 200px;    /* PC端LOGO宽度 */
+            --logo-pc-height: 200px;   /* PC端LOGO高度 */
+            --logo-pc-left: 0px;       /* PC端LOGO距左侧距离（可改px/%，负数向右移） */
+            --logo-pc-top: 15%;        /* PC端LOGO垂直位置（50%为标题区垂直居中） */
             
-            /* LOGO 单独可调（PC/移动端统一配置，独立于标题区） */
-            --logo-width: 180px;           /* LOGO固定宽度 */
-            --logo-height: 180px;          /* LOGO固定高度 */
-            --logo-left: 20px;             /* LOGO距标题区左侧距离（px/%） */
-            --logo-top: 15%;               /* LOGO垂直位置（50%为标题区垂直居中） */
+            /* LOGO 移动端配置（与标题完全独立） */
+            --logo-mobile-width: 100px;  /* 移动端LOGO宽度 */
+            --logo-mobile-height: 100px; /* 移动端LOGO高度 */
+            --logo-mobile-left: 0px;    /* 移动端LOGO距左侧距离 */
+            --logo-mobile-top: 15%;     /* 移动端LOGO垂直位置 */
+
+            /* 标题字体配置（新增：独立可调，PC/移动端分开设置） */
+            --title-pc-font-size: 2.2rem;  /* PC端标题字体大小（rem适配，推荐1.8-3rem） */
+            --title-mobile-font-size: 1.5rem;/* 移动端标题字体大小 */
+            --title-font-weight: 700;      /* 标题字重（400常规，700加粗） */
+            --title-color: #333;           /* 标题字体颜色 */
             
-            /* 主标题配置：居中+字体大小可调+全端适配 */
-            --main-title-font-pc: 2.2rem;  /* PC端标题字体大小 */
-            --main-title-font-tab: 1.8rem; /* 平板端标题字体大小 */
-            --main-title-font-mob: 1.4rem; /* 移动端标题字体大小 */
-            --main-title-color: #333;      /* 标题字体颜色 */
-            
-            /* 其他原有配置 */
-            --table-img-pc-size: 80px;
-            --table-img-mobile-size: 50px;
-            --bg-opacity: 0.5;             /* 背景图透明度（0-1） */
+            /* 其他配置 */
+            --table-img-pc-size: 80px;  /* PC端图片列大小 */
+            --table-img-mobile-size: 50px; /* 移动端图片列大小 */
+            /* 背景图配置（铺满不裁剪） */
+            --bg-opacity: 0.5;          /* 背景图透明度（0-1，0完全透明，1不透明） */
         }
 
         * {
@@ -41,11 +44,7 @@
             margin: 0 auto;
             padding: 10px;
             background-color: #f5f5f5;
-            font-size: 14px;
-            /* 页面整体居中，适配标题区固定宽度 */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-size: 14px; /* 基础字体 */
         }
         .device-box {
             background: #fff;
@@ -53,12 +52,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             margin-bottom: 15px;
-            /* 继承标题区固定宽度，整体内容和标题区同宽 */
-            width: var(--title-area-width);
-            max-width: 100%; /* 移动端不超出屏幕 */
-        }
-        h1, h2 {
-            font-weight: 600;
         }
         h2 {
             color: #444;
@@ -71,45 +64,44 @@
         .table-container {
             width: 100%;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            -webkit-overflow-scrolling: touch; /* 移动端顺滑滚动 */
             margin: 10px 0;
         }
         table {
             width: 100%;
-            min-width: 600px;
+            min-width: 600px; /* 保证表格最小宽度，移动端可滚动 */
             border-collapse: collapse;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px 6px;
+            padding: 8px 6px; /* 减小单元格内边距 */
             text-align: center !important;
             vertical-align: middle;
-            font-size: 13px;
+            font-size: 13px; /* 表格字体缩小 */
         }
         th {
             background-color: #f8f8f8;
-            white-space: nowrap;
+            white-space: nowrap; /* 表头不换行 */
         }
         td {
-            word-break: break-all;
+            word-break: break-all; /* 内容自动换行 */
         }
 
-        /* ========== 核心：标题区固定宽高+全端不变 ========== */
+        /* ========== LOGO+标题布局（核心：标题始终居中+LOGO独立+背景铺满不裁剪）========== */
         .title-container {
             position: relative;
-            width: var(--title-area-width);  /* 固定宽度，全端一致 */
-            height: var(--title-area-height); /* 固定高度，全端一致 */
-            margin: 0 auto 20px;             /* 水平居中，底部间距 */
-            padding: 0 20px;                 /* 左右内边距，防止标题贴边 */
-            background: url("background.jpg") no-repeat center center;
-            background-size: 100% 100%;      /* 背景铺满不裁剪 */
-            border-radius: 8px;              /* 和内容区统一圆角，视觉协调 */
-            /* 主标题绝对居中核心布局 */
+            margin-bottom: 20px;
+            min-height: var(--logo-pc-height); /* 按LOGO高度定标题区最小高度 */
             display: flex;
+            /* 标题水平+垂直绝对居中（核心），不受LOGO影响 */
             align-items: center;
             justify-content: center;
+            /* 背景铺满不裁剪 */
+            background: url("background.jpg") no-repeat center center;
+            background-size: 100% 100%;
+            background-color: transparent;
         }
-        /* 背景透明遮罩层 */
+        /* 背景透明遮罩层（实现透明度，不裁剪图片） */
         .bg-mask {
             position: absolute;
             top: 0;
@@ -120,28 +112,28 @@
             opacity: calc(1 - var(--bg-opacity));
             pointer-events: none;
             z-index: 1;
-            border-radius: 8px;
         }
-        /* ========== LOGO：单独可调+独立布局+不影响标题 ========== */
+        /* LOGO样式（与标题完全独立，不影响标题居中） */
         .custom-logo {
             position: absolute;
-            left: var(--logo-left);
-            top: var(--logo-top);
-            transform: translateY(-50%); /* 配合top:50%实现垂直居中 */
-            width: var(--logo-width);
-            height: var(--logo-height);
-            object-fit: contain; /* 保持LOGO比例，不拉伸 */
-            z-index: 3; /* 层级高于背景和遮罩 */
+            left: var(--logo-pc-left);
+            top: var(--logo-pc-top);
+            transform: translateY(-50%);
+            width: var(--logo-pc-width);
+            height: var(--logo-pc-height);
+            object-fit: contain; /* 保持LOGO比例 */
+            z-index: 3; /* LOGO在最上层 */
         }
-        /* ========== 主标题：始终居中+字体大小可调+全端适配 ========== */
+        /* 标题核心样式（独立配置，始终居中） */
         .main-title {
-            color: var(--main-title-color);
-            margin: 0;
-            padding: 0;
-            font-size: var(--main-title-font-pc); /* 默认PC端字体 */
-            white-space: nowrap; /* 防止标题换行，保证居中完整性 */
-            z-index: 3; /* 层级高于背景和遮罩 */
+            margin: 0; /* 清除默认边距，保证居中 */
+            padding: 0 20px; /* 左右留空，避免贴边 */
+            font-size: var(--title-pc-font-size); /* 调用全局配置字体大小 */
+            font-weight: var(--title-font-weight);
+            color: var(--title-color);
+            z-index: 3; /* 标题在最上层 */
             position: relative;
+            white-space: nowrap; /* 标题不换行 */
         }
 
         /* ========== 图片列样式 ========== */
@@ -199,23 +191,8 @@
             font-size: 12px;
         }
 
-        /* ========== 全端自适应：仅调节标题字体，其他均固定 ========== */
-        /* 平板端（769-1024px） */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            :root {
-                --main-title-font-pc: var(--main-title-font-tab); /* 切换平板端字体 */
-                --table-img-pc-size: 60px;
-            }
-            h2 {
-                font-size: 1.1rem;
-            }
-        }
-        /* 移动端（≤768px） */
+        /* ========== 移动端适配（768px以下）========== */
         @media (max-width: 768px) {
-            :root {
-                --main-title-font-pc: var(--main-title-font-mob); /* 切换移动端字体 */
-                --table-img-pc-size: var(--table-img-mobile-size);
-            }
             body {
                 padding: 5px;
                 font-size: 13px;
@@ -232,26 +209,58 @@
                 padding: 6px 4px;
                 font-size: 12px;
             }
-            /* 移动端标题区超出屏幕时，允许横向滚动，保证固定宽高 */
+
+            /* 移动端LOGO独立配置（不影响标题） */
             .title-container {
-                max-width: 100%;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
+                min-height: var(--logo-mobile-height);
+                /* 移动端背景铺满不裁剪 */
+                background: url("background.jpg") no-repeat center center;
+                background-size: 100% 100%;
+            }
+            .custom-logo {
+                left: var(--logo-mobile-left);
+                top: var(--logo-mobile-top);
+                width: var(--logo-mobile-width);
+                height: var(--logo-mobile-height);
+            }
+            /* 移动端标题字体大小独立配置（核心） */
+            .main-title {
+                font-size: var(--title-mobile-font-size);
+            }
+
+            /* 图片列 移动端缩小 */
+            .table-img {
+                width: var(--table-img-mobile-size);
+                height: var(--table-img-mobile-size);
+            }
+        }
+
+        /* 平板适配（768-1024px） */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            :root {
+                --logo-pc-width: 120px;
+                --logo-pc-height: 120px;
+                --table-img-pc-size: 60px;
+                --title-pc-font-size: 1.8rem; /* 平板端可单独调整标题字体大小 */
+                /* --bg-opacity: 0.15; */
+            }
+            h2 {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 标题区：固定宽高，独立于内容区，水平居中 -->
-    <div class="title-container">
-        <div class="bg-mask"></div>
-        <img src="logo.jpg" class="custom-logo" alt="设备管理系统LOGO">
-        <h1 class="main-title">设备资产信息管理</h1>
-    </div>
-
-    <!-- 设备信息展示模块：继承标题区宽度，整体协调 -->
+    <!-- 设备信息展示模块 -->
     <div class="device-box" id="deviceBox">
-        <!-- 基础资产信息 -->
+        <!-- LOGO+标题容器（标题居中+LOGO独立+背景铺满不裁剪） -->
+        <div class="title-container">
+            <div class="bg-mask"></div>
+            <img src="logo.jpg" class="custom-logo" alt="设备管理系统LOGO">
+            <h1 class="main-title">设备资产信息管理</h1>
+        </div>
+        
+        <!-- 基础资产信息（加滚动容器） -->
         <h2>基础资产信息</h2>
         <div class="table-container">
             <table id="deviceBaseInfoTable">
@@ -333,7 +342,7 @@
         };
         // ===================== 配置区结束 =====================
 
-        // 动态生成所有记录表
+        // 动态生成所有记录表（带滚动容器）
         function generateRecordTablesHtml() {
             const container = document.getElementById('recordTablesContainer');
             let html = '';
@@ -364,9 +373,9 @@
                 config.columns.forEach(col => {
                     const cellValue = item[col.key] || '';
                     if (col.type === 'img') {
-                        cellHtml += cellValue 
-                            ? `<td><img src="${cellValue}" alt="${col.label}" class="table-img" onclick="openImgPreview('${cellValue}')"></td>`
-                            : `<td><span class="no-img">暂无图片</span></td>`;
+                        cellHtml += cellValue ? 
+                            `<td><img src="${cellValue}" alt="${col.label}" class="table-img" onclick="openImgPreview('${cellValue}')"></td>` :
+                            `<td><span class="no-img">暂无图片</span></td>`;
                     } else {
                         cellHtml += `<td>${cellValue}</td>`;
                     }
