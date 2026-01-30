@@ -33,23 +33,28 @@
             /* 表格列宽统一配置 */
             --date-col-width: 100px;
             --person-col-width: 90px;
-            --remark-col-width: 150px;
-            --img-cell-pc-width: 80px;
+            --remark-col-width: 100px;
+            --img-cell-pc-width: 200px;
             --img-cell-pc-height: 80px;
-            --img-cell-mobile-width: 50px;
+            --img-cell-mobile-width: 150px;
             --img-cell-mobile-height: 50px;
             --img-fit-mode: cover;
+            /* 新增：设备主体图片单元格尺寸（PC+移动端） */
+            --device-img-cell-pc-width: 500px;
+            --device-img-cell-pc-height: 240px;
+            --device-img-cell-mobile-width: 300px;
+            --device-img-cell-mobile-height: 160px;
             
             /* 其他基础配置 */
             --bg-opacity: 0.8;
 
             /* ===== 新增配置项（核心优化）===== */
             --content-bg-img: url("bgbj.jpg"); /* 标题下背景图片（自行替换路径） */
-            --content-bg-opacity: 0.5; /* 标题下背景透明度（0-1，越小越淡） */
+            --content-bg-opacity: 0.6; /* 标题下背景透明度（0-1，越小越淡） */
             --table-border-width: 2px; /* 表格框线粗细（加粗，原1px） */
             --table-border-color: #ccc; /* 表格框线颜色 */
-            --th-bg-opacity: 0.6; /* 表头单元格底色透明度 */
-            --td-bg-opacity: 0.6; /* 内容单元格底色透明度 */
+            --th-bg-opacity: 0.5; /* 表头单元格底色透明度 */
+            --td-bg-opacity: 0.5; /* 内容单元格底色透明度 */
         }
 
         * {
@@ -128,7 +133,7 @@
         }
         #checkTable th:nth-child(4), #checkTable td:nth-child(4),
         #replaceTable th:nth-child(4), #replaceTable td:nth-child(4),
-        #repairTable th:nth-child(5), #repairTable td:nth-child(5) {
+        #repairTable th:nth-child(4), #repairTable td:nth-child(4) {
             width: var(--person-col-width);
             white-space: nowrap;
         }
@@ -146,6 +151,15 @@
             vertical-align: middle;
             overflow: hidden; /* 核心1：隐藏图片缩放超出部分，避免撑大单元格 */
         }
+        /* 新增：设备主体图片单元格样式（独立尺寸，PC+移动端适配） */
+        #deviceBaseInfoTable .device-img-cell {
+            width: var(--device-img-cell-pc-width);
+            height: var(--device-img-cell-pc-height);
+            padding: 0 !important;
+            vertical-align: middle;
+            overflow: hidden;
+            border: var(--table-border-width) solid var(--table-border-color);
+        }
         .table-img {
             width: 100%;
             height: 100%;
@@ -161,6 +175,19 @@
         .table-img:hover {
             transform: scale(1.05); /* 保留缩放效果，无位移不抖动 */
             border-color: #2196F3;
+        }
+        .no-img {
+            color: #999;
+            font-size: 12px;
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            line-height: var(--img-cell-pc-height);
+        }
+        /* 新增：设备主体图片无图提示（适配独立单元格高度） */
+        #deviceBaseInfoTable .no-img {
+            line-height: var(--device-img-cell-pc-height);
+            font-size: 14px;
         }
 
         /* ========== LOGO+标题布局 ========== */
@@ -250,14 +277,6 @@
             text-align: center;
             line-height: 35px;
         }
-        .no-img {
-            color: #999;
-            font-size: 12px;
-            display: inline-block;
-            width: 100%;
-            height: 100%;
-            line-height: var(--img-cell-pc-height);
-        }
 
         /* ===== 新增核心样式：标题下背景容器 ===== */
         .content-bg-container {
@@ -338,6 +357,15 @@
             .no-img {
                 line-height: var(--img-cell-mobile-height);
             }
+            /* 新增：移动端设备主体图片单元格尺寸适配 */
+            #deviceBaseInfoTable .device-img-cell {
+                width: var(--device-img-cell-mobile-width);
+                height: var(--device-img-cell-mobile-height);
+            }
+            #deviceBaseInfoTable .no-img {
+                line-height: var(--device-img-cell-mobile-height);
+                font-size: 12px;
+            }
 
             /* 移动端背景容器最小高度适配 */
             .content-bg-container {
@@ -353,9 +381,11 @@
                 --img-cell-pc-width: 60px;
                 --img-cell-pc-height: 60px;
                 --title-pc-font-size: 1.8rem;
-                /* 平板可单独调整背景/表格样式 */
+                /* 平板可单独调整背景/表格样式 + 设备图片单元格尺寸 */
                 --content-bg-opacity: 0.2;
                 --table-border-width: 1.5px;
+                --device-img-cell-pc-width: 150px;
+                --device-img-cell-pc-height: 200px;
             }
             h2 {
                 font-size: 1.1rem;
@@ -379,11 +409,20 @@
             <div class="content-bg-mask"></div>
             <!-- 内容主体：承载所有表格，层级最高 -->
             <div class="content-main">
-                <!-- 基础资产信息（原有结构不变） -->
+                <!-- 基础资产信息（新增设备主体图片列+合并单元格） -->
                  <h2>基础资产信息</h2>
                 <div class="table-container">
                     <table id="deviceBaseInfoTable">
-                        <tr><th>设备编号</th><td>ZQXN-2026-001</td></tr>
+                        <tr>
+                            <th>设备编号</th><td>ZQXN-2026-001</td>
+                            <!-- 新增：设备主体图片表头 + 单元格合并（跨6行） -->
+                            <th rowspan="6">设备主体</th>
+                            <td rowspan="6" class="device-img-cell">
+                                <!-- 设备主体图片：替换src为实际图片路径，保留预览功能 -->
+                                <img src="device-main.jpg" alt="设备主体图片" class="table-img" onclick="openImgPreview('device-main.jpg')">
+                                <!-- 无图时替换为：<span class="no-img">暂无设备图片</span> -->
+                            </td>
+                        </tr>
                         <tr><th>设备名称</th><td>挤压设备</td></tr>
                         <tr><th>使用部门</th><td>PACK生产</td></tr>
                         <tr><th>安装日期</th><td>2026-01-20</td></tr>
@@ -398,7 +437,7 @@
         </div>
     </div>
 
-    <!-- 图片预览弹窗（原有结构不变） -->
+    <!-- 图片预览弹窗（原有结构不变，兼容新图片预览） -->
     <div class="img-preview-modal" id="imgPreviewModal" onclick="closeImgPreview()">
         <div class="img-preview-content" onclick="event.stopPropagation()">
             <span class="close-preview" id="closePreviewBtn">&times;</span>
@@ -451,13 +490,12 @@
                     { key: "content", label: "维修内容" },
                     { key: "fault", label: "故障描述" },
                     { key: "engineer", label: "维修工程师" },
-                    { key: "status", label: "维修状态" },
                     { key: "img", label: "维修图片", type: "img" },
                     { key: "remark", label: "备注" }
                 ],
                 rows: [
-                    { date: "2026-02-02", content: "电机异响维修、轴承更换", fault: "电机轴承磨损导致异响", engineer: "钱七", status: "已完成", img: "repair1.jpg" },
-                    { date: "2026-02-10", content: "液压系统维修、漏油处理", fault: "液压油管接头松动导致漏油", engineer: "孙八", status: "已完成", img: "repair2.jpg" }
+                    { date: "2026-02-02", content: "电机异响维修、轴承更换", fault: "电机轴承磨损导致异响", engineer: "钱七",  img: "repair1.jpg" },
+                    { date: "2026-02-10", content: "液压系统维修、漏油处理", fault: "液压油管接头松动导致漏油", engineer: "孙八",  img: "repair2.jpg" }
                 ]
             }
         };
@@ -514,7 +552,7 @@
             }
         }
 
-        // 图片预览相关
+        // 图片预览相关（原有功能不变，兼容新添加的设备主体图片）
         function openImgPreview(imgSrc) {
             const modal = document.getElementById('imgPreviewModal');
             const previewImg = document.getElementById('previewImg');
